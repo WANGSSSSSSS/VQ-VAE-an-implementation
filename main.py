@@ -1,3 +1,6 @@
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+
 import torch
 import torch.nn as nn
 import argparse
@@ -50,7 +53,7 @@ if __name__ == "__main__":
     parser.add_argument("--encoder", type=str, default="Simple")
     parser.add_argument("--decoder", type=str, default="Simple")
     parser.add_argument("--vae", type=str, default="disVQ")
-    parser.add_argument("--dataset", type=str)
+    parser.add_argument("--dataset", type=str, default="cifar100")
     parser.add_argument("--vnum", type=int, default=2560)
     parser.add_argument("--vdim", type=int, default=64)
     parser.add_argument("--lr", type=float, default=0.001)
