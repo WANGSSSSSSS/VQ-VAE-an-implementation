@@ -21,7 +21,6 @@ class prdVQ(nn.Module):
         self.embedding.weight.data.uniform_(-1.0 / num, 1.0 / num)
 
     def sample(self, one_hot):
-
         return one_hot
 
     def forward(self, batch):
