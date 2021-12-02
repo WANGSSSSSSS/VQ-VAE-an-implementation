@@ -30,9 +30,10 @@ def train(model : nn.Module, dataset, lr, save_path):
 def build(args):
     vnum = args.vnum
     vdim = args.vdim
-    encoder = encoder_zoo[args.encoder]()
-    decoder = decoder_zoo[args.decoder]()
+    encoder = encoder_zoo[args.encoder](4, 3, 64, 64)
+    decoder = decoder_zoo[args.decoder](4, 64, 64, 3)
     model = vqvae_zoo[args.vqe](encoder, decoder, vnum, vdim)
+
     save_path = f"{args.encoder}-{args.decoder}-{args.vae}-({args.dataset}).pth"
     return model, dataset, save_path
 
@@ -43,7 +44,7 @@ if __name__ == "__main__":
     parser.add_argument("vae", type=str)
     parser.add_argument("dataset", type=str)
     parser.add_argument("--vnum", type=int, default=2560)
-    parser.add_argument("--vdim", type=int, default=128)
+    parser.add_argument("--vdim", type=int, default=64)
     parser.add_argument("--lr", type=float)
     parser.add_argument("--save", type=str, default="save")
 
