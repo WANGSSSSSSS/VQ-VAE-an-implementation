@@ -14,8 +14,12 @@ class disVQ(nn.Module):
         self.dim = dim
         self.vq.weight.data.uniform_(-1.0 / num, 1.0 / num)
 
-    def sample(self, one_hot):
-        return one_hot
+
+    def sample(self, ind, thre=0.1):
+        cond = torch.rand_like(ind) < thre
+        rand = torch.randint_like(ind, 0, self.num)
+        out = torch.where(cond, rand, ind)
+        return out
 
     def forward(self, batch):
         z:torch.Tensor = self.encoder(batch)
@@ -30,7 +34,7 @@ class disVQ(nn.Module):
         ind = torch.argmin(dis, dim=1)
         one_hot = F.one_hot(ind, num_classes=self.num)
         if not self.training :
-            one_hot = self.sample(one_hot)
+            one_hot = self.sample(ind)
         one_hot = one_hot.to(torch.float)
         z_q = one_hot @ self.vq.weight
         z_q = z_q.view(b,h,w,c)

@@ -10,9 +10,9 @@ from tqdm import tqdm
 from torch.optim import SGD
 from torch.utils.data import DataLoader
 
-def train(model : nn.Module, dataset, lr, save_path):
+def train(model : nn.Module, dataset, lr:float, save_path:str) -> None:
     model = model.cuda()
-    data = DataLoader(dataset,batch_size=10, shuffle=True, num_workers=2, pin_memory=True)
+    data = DataLoader(dataset,batch_size=100, shuffle=True, num_workers=2, pin_memory=True)
     optimizer = SGD(model.parameters(), lr=lr)
     for i in range(1, 100):
         with tqdm(data, unit="batch") as batches :
@@ -42,7 +42,7 @@ def build(args):
         ]
     )
     dataset = CIFAR100("./data", True, download=True, transform=transform)
-    save_path = f"{args.encoder}-{args.decoder}-{args.vae}-({args.dataset}).pth"
+    save_path = args.save + f"/{args.encoder}-{args.decoder}-{args.vae}-({args.dataset}).pth"
     return model, dataset, save_path
 
 if __name__ == "__main__":
