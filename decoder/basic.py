@@ -25,9 +25,8 @@ class SimplexN(nn.Module):
 
         layers.extend(
             [
-                nn.Conv2d(in_c, hidden_c, kernel_size=(3, 3), stride=(1, 1), padding=1),
+                nn.Conv2d(in_c, hidden_c, kernel_size=(1, 1), stride=(1, 1)),
                 nn.BatchNorm2d(hidden_c),
-                nn.ReLU(),
             ]
         )
 
@@ -45,7 +44,7 @@ class SimplexN(nn.Module):
             [
                 nn.Conv2d(hidden_c, out_c, kernel_size=(1, 1), stride=(1, 1)),
                 nn.BatchNorm2d(out_c),
-                nn.ReLU(),
+                nn.Tanh(),
             ]
         )
 
