@@ -11,7 +11,7 @@ class prdVQ(nn.Module):
 
         self.predict: nn.Module = nn.Sequential(
             nn.Linear(dim,num),
-            nn.Softmax()
+            nn.Softmax(),
         )
 
         self.vq = nn.Embedding(num, dim)
