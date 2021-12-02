@@ -12,11 +12,11 @@ from torch.utils.data import DataLoader
 
 def train(model : nn.Module, dataset, lr, save_path):
     model = model.cuda()
-    data = DataLoader(dataset, shuffle=True, num_workers=2, pin_memory=True)
+    data = DataLoader(dataset,batch_size=10, shuffle=True, num_workers=2, pin_memory=True)
     optimizer = SGD(model.parameters(), lr=lr)
     for i in range(1, 100):
         with tqdm(data, unit="batch") as batches :
-            for batch in batches:
+            for batch, _ in batches:
                 batches.set_description(f"epoch {i}")
                 batch = batch.cuda()
                 optimizer.zero_grad()
@@ -30,22 +30,30 @@ def train(model : nn.Module, dataset, lr, save_path):
 def build(args):
     vnum = args.vnum
     vdim = args.vdim
-    encoder = encoder_zoo[args.encoder](4, 3, 64, 64)
-    decoder = decoder_zoo[args.decoder](4, 64, 64, 3)
-    model = vqvae_zoo[args.vqe](encoder, decoder, vnum, vdim)
+    encoder = encoder_zoo[args.encoder](3, 3, 64, 64)
+    decoder = decoder_zoo[args.decoder](3, 64, 64, 3)
+    model = vqvae_zoo[args.vae](encoder, decoder, vnum, vdim)
 
+    from torchvision.datasets import CIFAR100
+    from torchvision.transforms import ToTensor,Compose
+    transform = Compose(
+        [
+            ToTensor(),
+        ]
+    )
+    dataset = CIFAR100("./data", True, download=True, transform=transform)
     save_path = f"{args.encoder}-{args.decoder}-{args.vae}-({args.dataset}).pth"
     return model, dataset, save_path
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("vq-vae")
-    parser.add_argument("encoder", type=str)
-    parser.add_argument("decoder", type=str)
-    parser.add_argument("vae", type=str)
-    parser.add_argument("dataset", type=str)
+    parser.add_argument("--encoder", type=str, default="Simple")
+    parser.add_argument("--decoder", type=str, default="Simple")
+    parser.add_argument("--vae", type=str, default="disVQ")
+    parser.add_argument("--dataset", type=str)
     parser.add_argument("--vnum", type=int, default=2560)
     parser.add_argument("--vdim", type=int, default=64)
-    parser.add_argument("--lr", type=float)
+    parser.add_argument("--lr", type=float, default=0.001)
     parser.add_argument("--save", type=str, default="save")
 
     args = parser.parse_args()

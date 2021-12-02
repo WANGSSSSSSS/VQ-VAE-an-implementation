@@ -18,7 +18,7 @@ class prdVQ(nn.Module):
 
         self.num = num
         self.dim = dim
-        self.embedding.weight.data.uniform_(-1.0 / num, 1.0 / num)
+        self.vq.weight.data.uniform_(-1.0 / num, 1.0 / num)
 
     def sample(self, one_hot):
         return one_hot

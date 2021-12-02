@@ -23,7 +23,7 @@ class SimplexN(nn.Module):
         super(SimplexN, self).__init__()
         layers = []
 
-        layers.append(
+        layers.extend(
             [
                 nn.Conv2d(in_c, hidden_c, kernel_size=(3, 3), stride=(1, 1), padding=1),
                 nn.BatchNorm2d(hidden_c),
@@ -35,13 +35,13 @@ class SimplexN(nn.Module):
             layers.append(Residual(hidden_c))
 
         for i in range(n):
-            layers.append([
-                nn.ConvTranspose2d(hidden_c, hidden_c, kernel_size=(3, 3), stride=(2, 2)),
+            layers.extend([
+                nn.ConvTranspose2d(hidden_c, hidden_c, kernel_size=(2, 2), stride=(2, 2)),
                 nn.BatchNorm2d(hidden_c),
                 nn.ReLU(),
             ])
 
-        layers.append(
+        layers.extend(
             [
                 nn.Conv2d(hidden_c, out_c, kernel_size=(1, 1), stride=(1, 1)),
                 nn.BatchNorm2d(out_c),
