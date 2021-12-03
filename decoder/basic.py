@@ -13,9 +13,9 @@ class Residual(nn.Module):
         ]
 
         self.layers = nn.Sequential(*self.layers)
-
+        self.relu = nn.ReLU()
     def forward(self, x):
-        return x + self.layers(x)
+        return self.relu(x + self.layers(x))
 
 
 class SimplexN(nn.Module):
@@ -44,7 +44,7 @@ class SimplexN(nn.Module):
             [
                 nn.Conv2d(hidden_c, out_c, kernel_size=(1, 1), stride=(1, 1)),
                 nn.BatchNorm2d(out_c),
-                nn.Tanh(),
+                nn.ReLU(),
             ]
         )
 

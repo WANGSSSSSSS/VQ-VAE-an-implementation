@@ -33,8 +33,8 @@ class disVQ(nn.Module):
               2* z_flatten @ self.vq.weight.t()
         ind = torch.argmin(dis, dim=1)
         one_hot = F.one_hot(ind, num_classes=self.num)
-        if not self.training :
-            one_hot = self.sample(ind)
+        # if not self.training :
+        #     one_hot = self.sample(ind)
         one_hot = one_hot.to(torch.float)
         z_q = one_hot @ self.vq.weight
         z_q = z_q.view(b,h,w,c)
