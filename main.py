@@ -19,7 +19,7 @@ from torch.utils.data import DataLoader, Dataset
 
 def train(model : nn.Module, dataset, lr:float, save_path:str) -> None:
     model = model.cuda()
-    data = DataLoader(dataset,batch_size=1, shuffle=True, num_workers=2, pin_memory=True)
+    data = DataLoader(dataset,batch_size=10, shuffle=True, num_workers=2, pin_memory=True)
     optimizer = SGD(model.parameters(), lr=lr)
     for i in range(1, 2000):
         with tqdm(data, unit="batch") as batches :
@@ -39,25 +39,27 @@ def visulize(model: nn.Module,dataset : Dataset, save_path : str,):
     from torchvision.transforms import ToTensor, ToPILImage
     cp = torch.load(save_path, map_location="cpu")
     model.load_state_dict(cp)
-    index = random.randint(0, len(dataset))
-    image, _ = dataset[index]
-    out, _ = model(image[None, ...])
 
-    out_image = ToPILImage()(out[0])
-    image = ToPILImage()(image)
+    #fig, ax = plt.subplots(10,2)
+    plt.subplots_adjust(wspace=0,hspace=0)
+    for i in range(12):
+        index = random.randint(0, len(dataset))
+        image, _ = dataset[index]
+        out, _ = model(image[None, ...])
 
-    # print(numpy.array(image))
-    # print("***")
-    # print(numpy.array(out_image))
-    # print("%%%")
-    # # print(image - out_image)
-    # out_image = numpy.array(out_image, dtype=numpy.uint8)
-    # image = numpy.array(image, dtype=numpy.uint8)
+        out_image = ToPILImage()(out[0])
+        image = ToPILImage()(image)
 
-    plt.imshow(image)
+        plt.subplot(4, 6, i*2 + 1)
+        plt.imshow(out_image)
+        plt.xticks([])
+        plt.yticks([])
+        plt.subplot(4, 6, i*2 + 2)
+        plt.imshow(image)
+        plt.xticks([])
+        plt.yticks([])
     plt.show()
-    plt.imshow(out_image)
-    plt.show()
+
 
 def build(args):
     vnum = args.vnum

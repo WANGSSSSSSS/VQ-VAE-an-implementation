@@ -47,6 +47,6 @@ class disVQ(nn.Module):
             loss = 0.0
             loss += torch.mean((z_q - z.detach())**2)
             loss += torch.mean((z_q.detach() - z)**2)
-            loss += torch.mean((batch - out)**2)
+            loss += (20)*torch.mean((batch - out)**2)
 
         return  out, loss
