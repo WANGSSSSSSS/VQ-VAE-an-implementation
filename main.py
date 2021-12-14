@@ -19,7 +19,7 @@ from torch.utils.data import DataLoader, Dataset
 
 def train(model : nn.Module, dataset, lr:float, save_path:str) -> None:
     model = model.cuda()
-    data = DataLoader(dataset,batch_size=10, shuffle=True, num_workers=2, pin_memory=True)
+    data = DataLoader(dataset,batch_size=100, shuffle=True, num_workers=2, pin_memory=True)
     optimizer = SGD(model.parameters(), lr=lr)
     for i in range(1, 2000):
         with tqdm(data, unit="batch") as batches :
@@ -39,7 +39,7 @@ def visulize(model: nn.Module,dataset : Dataset, save_path : str,):
     from torchvision.transforms import ToTensor, ToPILImage
     cp = torch.load(save_path, map_location="cpu")
     model.load_state_dict(cp)
-
+    model.eval()
     #fig, ax = plt.subplots(10,2)
     plt.subplots_adjust(wspace=0,hspace=0)
     for i in range(12):
@@ -64,19 +64,21 @@ def visulize(model: nn.Module,dataset : Dataset, save_path : str,):
 def build(args):
     vnum = args.vnum
     vdim = args.vdim
-    encoder = encoder_zoo[args.encoder](3, 3, 64, 64)
-    decoder = decoder_zoo[args.decoder](3, 64, 64, 3)
+    encoder = encoder_zoo[args.encoder](2, 1, 64, 64)
+    decoder = decoder_zoo[args.decoder](2, 64, 64, 1)
     model = vqvae_zoo[args.vae](encoder, decoder, vnum, vdim)
 
-    from torchvision.datasets import CIFAR100
+    from torchvision.datasets import CIFAR100, MNIST
     from torchvision.transforms import PILToTensor,Compose, ConvertImageDtype
     transform = Compose(
         [
             PILToTensor(),
+            #lambda x : x.float()
             ConvertImageDtype(torch.float)
         ]
     )
-    dataset = CIFAR100("./data", True, download=True, transform=transform)
+    dataset = MNIST("./data", True, download=True, transform=transform)
+    #dataset = CIFAR100("./data", True, download=True, transform=transform)
     save_path = args.save + f"/{args.encoder}-{args.decoder}-{args.vae}-({args.dataset}).pth"
     return model, dataset, save_path
 
@@ -86,7 +88,7 @@ if __name__ == "__main__":
     parser.add_argument("--decoder", type=str, default="Simple")
     parser.add_argument("--vae", type=str, default="disVQ")
     parser.add_argument("--dataset", type=str, default="cifar100")
-    parser.add_argument("--vnum", type=int, default=2560)
+    parser.add_argument("--vnum", type=int, default=2)
     parser.add_argument("--vdim", type=int, default=64)
     parser.add_argument("--lr", type=float, default=0.01)
     parser.add_argument("--save", type=str, default="save")

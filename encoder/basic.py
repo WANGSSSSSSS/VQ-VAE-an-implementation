@@ -35,6 +35,7 @@ class SimplexN(nn.Module):
                 nn.Conv2d(hidden_c, hidden_c, kernel_size=(3, 3), stride=(2, 2), padding=1),
                 nn.BatchNorm2d(hidden_c),
                 nn.ReLU(),
+                Residual(hidden_c)
             ])
 
         for i in range(4):

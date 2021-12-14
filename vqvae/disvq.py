@@ -15,10 +15,11 @@ class disVQ(nn.Module):
         self.vq.weight.data.uniform_(-1.0 / num, 1.0 / num)
 
 
-    def sample(self, ind, thre=0.1):
-        cond = torch.rand_like(ind) < thre
+    def sample(self, ind, thre=1.0):
+        cond = torch.rand(ind.shape) < thre
         rand = torch.randint_like(ind, 0, self.num)
         out = torch.where(cond, rand, ind)
+        out = F.one_hot(out, num_classes=self.num)
         return out
 
     def forward(self, batch):
@@ -33,8 +34,8 @@ class disVQ(nn.Module):
               2* z_flatten @ self.vq.weight.t()
         ind = torch.argmin(dis, dim=1)
         one_hot = F.one_hot(ind, num_classes=self.num)
-        # if not self.training :
-        #     one_hot = self.sample(ind)
+        if not self.training :
+            one_hot = self.sample(ind)
         one_hot = one_hot.to(torch.float)
         z_q = one_hot @ self.vq.weight
         z_q = z_q.view(b,h,w,c)
@@ -47,6 +48,6 @@ class disVQ(nn.Module):
             loss = 0.0
             loss += torch.mean((z_q - z.detach())**2)
             loss += torch.mean((z_q.detach() - z)**2)
-            loss += (20)*torch.mean((batch - out)**2)
+            loss += torch.mean((batch - out)**2)*50
 
         return  out, loss
